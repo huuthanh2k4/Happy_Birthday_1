@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Bắt đầu 🎵</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: black;
+      color: white;
+      font-family: Arial, sans-serif;
+      flex-direction: column;
+    }
+    button {
+      padding: 12px 24px;
+      font-size: 18px;
+      cursor: pointer;
+      border: none;
+      border-radius: 8px;
+      background: #ff4081;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <h1>Nhấn vào để nhận bất ngờ</h1>
+  <button id="startBtn">Bắt đầu</button>
+
+  <script>
+    document.getElementById("startBtn").addEventListener("click", () => {
+      const audio = new Audio("MUSIC/20.mp3");
+      audio.loop = true;
+      audio.play();
+
+      // Lưu nhạc vào window để không bị mất khi chuyển trang
+      window.bgAudio = audio;
+
+      // Chuyển sang trang chính
+      window.location.href = "index1.html";
+    });
+  </script>
+</body>
+</html>

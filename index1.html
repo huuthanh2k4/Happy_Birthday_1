@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Chúc Mừng Sinh Nhật ĐỨC ANH! 🎉</title>
+    <meta name="language" content="zh-CN">
+
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Chúc Mừng Sinh Nhật Đức ANH! 🎂">
+
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Chúc Mừng Sinh Nhật Đức ANH! 🎂">
+    <meta name="twitter:description"
+        content="Một món quà sinh nhật đầy yêu thương đang chờ bạn khám phá! Nhấn để xem lời chúc đặc biệt!">
+    <meta name="twitter:image" content="https://happybirthdaydeargift.vercel.app/image/birthday-gift.jpg">
+
+    <link rel="icon" type="image/x-icon" href="https://cdn.jsdelivr.net/gh/sun0225SUN/photos/img/20210715233345.png">
+    <link rel="stylesheet" href="./css/index.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css?family=Pacifico&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+</head>
+
+<body>
+
+    <div id="googleAuthContainer" style="
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        z-index: 10003;
+        font-family: Arial, sans-serif;
+    ">
+
+
+        <div id="userInfo" style="
+            display: none;
+            align-items: center;
+            padding: 8px 12px;
+            background: none;
+            border: 1px solid #dadce0;
+            border-radius: 24px;
+            font-size: 14px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        ">
+            <img id="userAvatar" style="
+                width: 24px;
+                height: 24px;
+                border-radius: 50%;
+                margin-right: 8px;
+            ">
+            <div style="margin-right: 12px;">
+                <div id="userName" style="font-weight: 500; color: #ffffff;"></div>
+                <div id="userEmail" style="font-size: 12px; color: #ffffff;"></div>
+            </div>
+        </div>
+    </div>
+
+    <canvas id="matrix-rain" style="display: none;"></canvas>
+    <canvas style="position:absolute;width:100%;height:100%;z-index:9999;display:none;" class="canvas"></canvas>
+    <div class="overlay">
+        <div class="stars-container" id="starsContainer"></div>
+        <div class="content-display" id="contentDisplay">
+            <p id="contentText"></p>
+        </div>
+        <div class="firework-container" id="fireworkContainer"></div>
+        <div class="book-container">
+            <div class="book" id="book"></div>
+        </div>
+
+        <button id="settingsButton" title="Settings"></button>
+
+        <div id="settingsModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 data-i18n="settings"></h2>
+                    <span class="close"></span>
+                </div>
+            </div>
+        </div>
+        <div id="orientation-lock">
+        </div>
+        <script>
+            setTimeout(function () {
+                window.location.href = "index2.html";
+            }, 20000);
+        </script>
+        <!-- Phát nhạc nền -->
+        <script>
+            window.addEventListener("DOMContentLoaded", function () {
+                const audio = document.createElement("audio");
+                audio.src = "MUSIC/20.mp3";
+                audio.loop = true;
+                audio.autoplay = true;
+                audio.volume = 1;
+                document.body.appendChild(audio);
+
+                // Nếu autoplay bị chặn, phát khi người dùng click vào trang
+                audio.play().catch(() => {
+                    document.addEventListener("click", function playOnClick() {
+                        audio.play();
+                        document.removeEventListener("click", playOnClick);
+                    });
+                });
+            });
+        </script>
+        <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+        <script src="JS/settings.js"></script>
+        <script src="JS/ui.js"></script>
+</body>
+
+</html>
