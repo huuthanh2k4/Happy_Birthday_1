@@ -13,6 +13,8 @@
       color: white;
       font-family: Arial, sans-serif;
       flex-direction: column;
+      text-align: center;
+      margin: 0;
     }
     button {
       padding: 12px 24px;
@@ -23,19 +25,62 @@
       background: #ff4081;
       color: white;
     }
+    #rotateMessage {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0,0,0,0.95);
+      color: white;
+      z-index: 9999;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      font-size: 22px;
+      padding: 20px;
+    }
   </style>
 </head>
 <body>
-  <h1>Nhấn vào để nhận bất ngờ</h1>
+  <h1>Nhấn vào để nhận bất ngờ 🎶</h1>
   <button id="startBtn">Bắt đầu</button>
 
+  <!-- Thông báo xoay ngang -->
+  <div id="rotateMessage">📱 Vui lòng xoay ngang màn hình (landscape) để tiếp tục!</div>
+
   <script>
+    const rotateMessage = document.getElementById("rotateMessage");
+
+    function isPortrait() {
+      return window.innerHeight > window.innerWidth;
+    }
+
+    function checkOrientation() {
+      if (isPortrait()) {
+        rotateMessage.style.display = "flex";
+      } else {
+        rotateMessage.style.display = "none";
+      }
+    }
+
+    window.addEventListener("load", checkOrientation);
+    window.addEventListener("resize", checkOrientation);
+    window.addEventListener("orientationchange", checkOrientation);
+
     document.getElementById("startBtn").addEventListener("click", () => {
+      if (isPortrait()) {
+        alert("⚠️ Hãy xoay ngang màn hình để bắt đầu!");
+        return; // không cho chuyển trang nếu xoay dọc
+      }
+
       const audio = new Audio("MUSIC/20.mp3");
       audio.loop = true;
       audio.play();
 
-      // Lưu nhạc vào window để không bị mất khi chuyển trang
+      // Lưu nhạc để không bị mất khi chuyển trang
       window.bgAudio = audio;
 
       // Chuyển sang trang chính
