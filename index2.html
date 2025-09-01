@@ -83,7 +83,9 @@
       top: -10px;          
     }
 
-    .images img {
+    /* Ảnh và video có cùng style */
+    .images img,
+    .images video {
       width: 300px;     
       height: 280px;
       object-fit: cover;  
@@ -118,7 +120,11 @@
         <div class="message" id="message"></div>
         <div class="images">
           <img src="IMG/z6947289143995_02399e941a996318b424e2c85fb61b15.jpg" alt="ảnh 2">
-          <img src="IMG/Hình Ảnh Gia Đình.jpg" alt="ảnh 3">
+          <!-- Thay ảnh bằng video -->
+          <video controls autoplay muted loop>
+            <source src="MUSIC/6950497419665.mp4" type="video/mp4">
+            Trình duyệt của bạn không hỗ trợ video.
+          </video>
         </div>
       </div>
     </div>
@@ -148,23 +154,25 @@ Cảm ơn anh vì tất cả – yêu anh thật nhiều!";
       setTimeout(typeEffect, 1500); // bắt đầu đánh chữ sau khi mở
     }
   </script>
-  <script>
-            window.addEventListener("DOMContentLoaded", function () {
-                const audio = document.createElement("audio");
-                audio.src = "MUSIC/21.mp3";
-                audio.loop = true;
-                audio.autoplay = true;
-                audio.volume = 1;
-                document.body.appendChild(audio);
 
-                // Nếu autoplay bị chặn, phát khi người dùng click vào trang
-                audio.play().catch(() => {
-                    document.addEventListener("click", function playOnClick() {
-                        audio.play();
-                        document.removeEventListener("click", playOnClick);
-                    });
-                });
-            });
-        </script>
+  <script>
+    window.addEventListener("DOMContentLoaded", function () {
+      const audio = document.createElement("audio");
+      audio.src = "MUSIC/21.mp3";
+      audio.loop = true;
+      audio.autoplay = true;
+      audio.volume = 1;
+      document.body.appendChild(audio);
+
+      // Nếu autoplay bị chặn, phát khi người dùng click vào trang
+      audio.play().catch(() => {
+        document.addEventListener("click", function playOnClick() {
+          audio.play();
+          document.removeEventListener("click", playOnClick);
+        });
+      });
+    });
+  </script>
+
 </body>
 </html>
