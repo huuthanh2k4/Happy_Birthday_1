@@ -4,109 +4,108 @@
   <meta charset="UTF-8">
   <title>Thiệp sinh nhật</title>
   <style>
-  @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap');
 
-  html, body {
-    margin: 0;
-    padding: 0;
-    width: 100vw;
-    height: 100vh;
-    overflow: hidden;
-    background: linear-gradient(to bottom, #fde2e4, #fff1e6);
-    font-family: 'Great Vibes', cursive;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: linear-gradient(to bottom, #fde2e4, #fff1e6);
+      font-family: 'Great Vibes', cursive;
+    }
 
-  .card {
-    position: relative;
-    width: 100vw;        /* full chiều ngang */
-    height: 100vh;       /* full chiều cao */
-    max-width: 100%;     
-    max-height: 100%;
-    perspective: 2000px;
-  }
+    .card {
+      position: relative;
+      width: 780px;   
+      height: 430px;  
+      perspective: 2000px;
+    }
 
-  .card-inner {
-    width: 100%;
-    height: 100%;
-    transform-style: preserve-3d;
-    transition: transform 2s ease;
-    position: relative;
-  }
+    .card-inner {
+      width: 100%;
+      height: 100%;
+      transform-style: preserve-3d;
+      transition: transform 2s ease;
+      position: relative;
+    }
 
-  .card.open .card-inner {
-    transform: rotateY(-180deg);
-  }
+    .card.open .card-inner {
+      transform: rotateY(-180deg);
+    }
 
-  .card-front, .card-back {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    backface-visibility: hidden;
-    border-radius: 0;            /* bỏ bo góc để full màn hình */
-    overflow: hidden;
-  }
+    .card-front, .card-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    }
 
-  .card-front img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
+    .card-front {
+      background: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
 
-  .card-back {
-    background: #fff8f0;
-    transform: rotateY(180deg);
-    padding: 3%;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    box-sizing: border-box;
-  }
+    .card-front img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
 
-  .message {
-    font-size: clamp(18px, 3vw, 28px);
-    font-weight: bold;
-    color: #ff6fb0;
-    min-height: 5em;
-  }
+    .card-back {
+      background: #fff8f0;
+      transform: rotateY(180deg);
+      padding: 20px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
 
-  .images {
-    margin-top: 10px;
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    flex: 1;
-  }
+    .message {
+      font-size: 26px;  
+      font-weight: bold;
+      color: #ffb3c6;
+      min-height: 180px;
+    }
 
-  .images img,
-  .images video {
-    width: 45%;              /* hai ảnh/video chiếm nửa màn hình ngang */
-    height: auto;
-    max-height: 70%;         /* không vượt quá 70% chiều cao màn hình */
-    object-fit: cover;
-    border-radius: 12px;
-  }
+    .images {
+      margin-top: 5px;     
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      position: relative;
+      top: -10px;          
+    }
 
-  .open-btn {
-    position: absolute;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    padding: 0.5em 1.2em;
-    border: none;
-    border-radius: 10px;
-    background: #ffb3c6;
-    color: #fff;
-    font-size: clamp(14px, 2vw, 20px);
-    cursor: pointer;
-    font-family: 'Great Vibes', cursive;
-    z-index: 10;
-  }
-</style>
+    .images img {
+      width: 300px;     
+      height: 280px;
+      object-fit: cover;  
+      border-radius: 12px;
+    }
 
+    /* Nút mở thiệp */
+    .open-btn {
+      position: absolute;
+      bottom: -50px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 10px 20px;
+      border: none;
+      border-radius: 10px;
+      background: #ffb3c6;
+      color: #fff;
+      font-size: 18px;
+      cursor: pointer;
+      font-family: 'Great Vibes', cursive;
+    }
+  </style>
 </head>
 <body>
 
@@ -119,11 +118,7 @@
         <div class="message" id="message"></div>
         <div class="images">
           <img src="IMG/z6947289143995_02399e941a996318b424e2c85fb61b15.jpg" alt="ảnh 2">
-          <!-- Thay ảnh bằng video -->
-          <video controls autoplay muted loop>
-            <source src="MUSIC/6950497419665.mp4" type="video/mp4">
-            Trình duyệt của bạn không hỗ trợ video.
-          </video>
+          <img src="IMG/Hình Ảnh Gia Đình.jpg" alt="ảnh 3">
         </div>
       </div>
     </div>
@@ -153,25 +148,23 @@ Cảm ơn anh vì tất cả – yêu anh thật nhiều!";
       setTimeout(typeEffect, 1500); // bắt đầu đánh chữ sau khi mở
     }
   </script>
-
   <script>
-    window.addEventListener("DOMContentLoaded", function () {
-      const audio = document.createElement("audio");
-      audio.src = "MUSIC/21.mp3";
-      audio.loop = true;
-      audio.autoplay = true;
-      audio.volume = 1;
-      document.body.appendChild(audio);
+            window.addEventListener("DOMContentLoaded", function () {
+                const audio = document.createElement("audio");
+                audio.src = "MUSIC/21.mp3";
+                audio.loop = true;
+                audio.autoplay = true;
+                audio.volume = 1;
+                document.body.appendChild(audio);
 
-      // Nếu autoplay bị chặn, phát khi người dùng click vào trang
-      audio.play().catch(() => {
-        document.addEventListener("click", function playOnClick() {
-          audio.play();
-          document.removeEventListener("click", playOnClick);
-        });
-      });
-    });
-  </script>
-
+                // Nếu autoplay bị chặn, phát khi người dùng click vào trang
+                audio.play().catch(() => {
+                    document.addEventListener("click", function playOnClick() {
+                        audio.play();
+                        document.removeEventListener("click", playOnClick);
+                    });
+                });
+            });
+        </script>
 </body>
 </html>
