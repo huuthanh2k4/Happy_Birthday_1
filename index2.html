@@ -6,20 +6,28 @@
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap');
 
-    body {
+    /* Toàn màn hình, landscape-friendly */
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      background: linear-gradient(to bottom, #fde2e4, #fff1e6);
+      font-family: 'Great Vibes', cursive;
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
-      background: linear-gradient(to bottom, #fde2e4, #fff1e6);
-      font-family: 'Great Vibes', cursive;
     }
 
     .card {
       position: relative;
-      width: 780px;   
-      height: 430px;  
+      width: 100vw;        /* full chiều ngang */
+      height: 100vh;       /* full chiều cao */
+      max-width: 100%;
+      max-height: 100%;
       perspective: 2000px;
+      cursor: pointer;     /* click để mở */
     }
 
     .card-inner {
@@ -36,74 +44,106 @@
 
     .card-front, .card-back {
       position: absolute;
-      width: 100%;
-      height: 100%;
+      inset: 0;
       backface-visibility: hidden;
-      border-radius: 15px;
+      border-radius: 0;   /* full màn hình, không bo góc để khỏi cắt nội dung */
       overflow: hidden;
-      box-shadow: 0 10px 20px rgba(0,0,0,0.2);
     }
 
-    .card-front {
-      background: white;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+.card-front {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  padding: 2vh 2vw; /* thêm padding để ảnh không sát viền */
+  box-sizing: border-box;
+}
+
+.card-front img {
+  width: 90%;      /* nhỏ hơn 100% */
+  height: auto;    /* giữ tỉ lệ */
+  max-height: 90%; /* không quá cao */
+  object-fit: cover;
+  border-radius: 12px; /* thêm bo nhẹ cho đẹp */
+  box-shadow: 0 6px 16px rgba(0,0,0,0.25); /* đổ bóng nhẹ */
+}
+
+
+    /* Gợi ý bấm */
+    .click-hint {
+      position: absolute;
+      bottom: 2vh;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(255, 179, 198, 0.85);
+      color: #fff;
+      padding: 8px 16px;
+      border-radius: 12px;
+      font-size: clamp(14px, 2vw, 20px);
+      font-family: 'Great Vibes', cursive;
+      animation: blink 1.2s infinite;
+      pointer-events: none;
+    }
+    @keyframes blink {
+      0%, 50%, 100% { opacity: 1; }
+      25%, 75% { opacity: 0; }
     }
 
-    .card-front img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
+    /* Mặt sau: CHỮ + 2 khung ẢNH/VIDEO, luôn còn chỗ cho chữ */
     .card-back {
       background: #fff8f0;
       transform: rotateY(180deg);
-      padding: 20px;
-      text-align: center;
+      padding: 2vh 2vw;
+      box-sizing: border-box;
+
+      /* Bố cục dọc: chữ phía trên (auto), khối ảnh phía dưới (tự canh theo bề ngang) */
       display: flex;
       flex-direction: column;
-      justify-content: center;
+      justify-content: flex-start;
+      gap: min(2vh, 16px);
     }
 
     .message {
-      font-size: 26px;  
+      /* chữ co giãn theo chiều cao màn hình để luôn vừa */
+      font-size: clamp(16px, 2.6vh, 28px);
+      line-height: 1.35;
       font-weight: bold;
-      color: #ffb3c6;
-      min-height: 180px;
+      color: #ff6fb0;
+      text-align: center;
+
+      /* đảm bảo luôn có chỗ hiển thị (không bị ảnh lấn chiếm) */
+      flex: 0 0 auto;
+      max-width: 90%;
+      margin: 0 auto;
+      min-height: 4em; /* chừa không gian tối thiểu */
     }
 
+    /* Khối ảnh/video chiếm ~nửa chiều cao thẻ nhờ tỷ lệ 16:9 + 2 cột */
     .images {
-      margin-top: 5px;     
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-      position: relative;
-      top: -10px;          
+      flex: 0 0 auto; /* không ép theo chiều cao, để tự tính theo bề ngang */
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: min(2vh, 16px);
+      align-items: center;
+      justify-items: center;
+      padding-bottom: 1vh;
     }
 
-    .images img {
-      width: 300px;     
-      height: 280px;
-      object-fit: cover;  
+    /* Mỗi khung tự tính chiều cao từ bề ngang theo aspect-ratio, nên tổng chiều cao ~50% thẻ */
+    .images img,
+    .images video {
+      width: 100%;
+      aspect-ratio: 16 / 9; /* thấp, để dành chỗ cho chữ */
+      height: auto;
+      object-fit: cover;
       border-radius: 12px;
+      display: block;
     }
 
-    /* Nút mở thiệp */
-    .open-btn {
-      position: absolute;
-      bottom: -50px;
-      left: 50%;
-      transform: translateX(-50%);
-      padding: 10px 20px;
-      border: none;
-      border-radius: 10px;
-      background: #ffb3c6;
-      color: #fff;
-      font-size: 18px;
-      cursor: pointer;
-      font-family: 'Great Vibes', cursive;
+    /* Tối ưu cho laptop: tránh chữ quá nhỏ/ảnh quá to trên màn rộng */
+    @media (min-aspect-ratio: 16/10) {
+      .message { font-size: clamp(16px, 2.2vh, 26px); }
+      .images { gap: min(1.8vh, 14px); }
     }
   </style>
 </head>
@@ -113,16 +153,21 @@
     <div class="card-inner">
       <div class="card-front">
         <img src="IMG/63c2868b7532b37fc132cc49134a258e.jpg" alt="ảnh 1">
+        <div class="click-hint">👉 Bấm vào hình để mở thiệp 👈</div>
       </div>
+
       <div class="card-back">
         <div class="message" id="message"></div>
+
         <div class="images">
           <img src="IMG/z6947289143995_02399e941a996318b424e2c85fb61b15.jpg" alt="ảnh 2">
-          <img src="IMG/Hình Ảnh Gia Đình.jpg" alt="ảnh 3">
+          <video controls autoplay muted loop>
+            <source src="MUSIC/6950497419665.mp4" type="video/mp4">
+            Trình duyệt của bạn không hỗ trợ video.
+          </video>
         </div>
       </div>
     </div>
-    <button class="open-btn" id="openBtn" onclick="openCard()">Mở thiệp</button>
   </div>
 
   <script>
@@ -143,28 +188,35 @@ Cảm ơn anh vì tất cả – yêu anh thật nhiều!";
     }
 
     function openCard() {
-      document.getElementById("card").classList.add("open");
-      document.getElementById("openBtn").style.display = "none"; // ẩn nút mở thiệp
-      setTimeout(typeEffect, 1500); // bắt đầu đánh chữ sau khi mở
+      const card = document.getElementById("card");
+      card.classList.add("open");
+      const hint = card.querySelector(".click-hint");
+      if (hint) hint.style.display = "none";
+      setTimeout(typeEffect, 800); // bắt đầu đánh chữ sớm hơn để không cảm giác "trống"
     }
-  </script>
-  <script>
-            window.addEventListener("DOMContentLoaded", function () {
-                const audio = document.createElement("audio");
-                audio.src = "MUSIC/21.mp3";
-                audio.loop = true;
-                audio.autoplay = true;
-                audio.volume = 1;
-                document.body.appendChild(audio);
 
-                // Nếu autoplay bị chặn, phát khi người dùng click vào trang
-                audio.play().catch(() => {
-                    document.addEventListener("click", function playOnClick() {
-                        audio.play();
-                        document.removeEventListener("click", playOnClick);
-                    });
-                });
-            });
-        </script>
+    // Click vào ảnh bìa để mở
+    document.getElementById("card").addEventListener("click", openCard);
+  </script>
+
+  <script>
+    // Nhạc nền (autoplay nếu được, fallback click)
+    window.addEventListener("DOMContentLoaded", function () {
+      const audio = document.createElement("audio");
+      audio.src = "MUSIC/21.mp3";
+      audio.loop = true;
+      audio.autoplay = true;
+      audio.volume = 1;
+      document.body.appendChild(audio);
+
+      audio.play().catch(() => {
+        document.addEventListener("click", function playOnClick() {
+          audio.play();
+          document.removeEventListener("click", playOnClick);
+        });
+      });
+    });
+  </script>
+
 </body>
 </html>
