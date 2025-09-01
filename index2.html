@@ -4,110 +4,124 @@
   <meta charset="UTF-8">
   <title>Thiệp sinh nhật</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap');
 
-    body {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      background: linear-gradient(to bottom, #fde2e4, #fff1e6);
-      font-family: 'Great Vibes', cursive;
-    }
+  body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background: linear-gradient(to bottom, #fde2e4, #fff1e6);
+    font-family: 'Great Vibes', cursive;
+    overflow: hidden;
+  }
 
-    .card {
-      position: relative;
-      width: 780px;   
-      height: 430px;  
-      perspective: 2000px;
-    }
+  .card {
+    position: relative;
+    width: 90vw;           /* chiếm 90% chiều rộng màn hình */
+    max-width: 780px;      /* không vượt quá 780px */
+    height: auto;
+    aspect-ratio: 16/9;    /* giữ tỷ lệ giống thiệp ngang */
+    perspective: 2000px;
+  }
 
-    .card-inner {
-      width: 100%;
-      height: 100%;
-      transform-style: preserve-3d;
-      transition: transform 2s ease;
-      position: relative;
-    }
+  .card-inner {
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    transition: transform 2s ease;
+    position: relative;
+  }
 
-    .card.open .card-inner {
-      transform: rotateY(-180deg);
-    }
+  .card.open .card-inner {
+    transform: rotateY(-180deg);
+  }
 
-    .card-front, .card-back {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      backface-visibility: hidden;
-      border-radius: 15px;
-      overflow: hidden;
-      box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-    }
+  .card-front, .card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+  }
 
-    .card-front {
-      background: white;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
+  .card-front {
+    background: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 
-    .card-front img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
+  .card-front img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
 
-    .card-back {
-      background: #fff8f0;
-      transform: rotateY(180deg);
-      padding: 20px;
-      text-align: center;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
+  .card-back {
+    background: #fff8f0;
+    transform: rotateY(180deg);
+    padding: 5%;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    box-sizing: border-box;
+  }
 
-    .message {
-      font-size: 26px;  
-      font-weight: bold;
-      color: #ffb3c6;
-      min-height: 180px;
-    }
+  .message {
+    font-size: clamp(16px, 4vw, 26px);  /* tự co giãn theo màn hình */
+    font-weight: bold;
+    color: #ffb3c6;
+    min-height: 4em;
+  }
 
-    .images {
-      margin-top: 5px;     
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-      position: relative;
-      top: -10px;          
-    }
+  .images {
+    margin-top: 5px;     
+    display: flex;
+    justify-content: center;
+    gap: 5%;
+    flex-wrap: wrap;     /* xuống dòng khi màn nhỏ */
+  }
 
-    /* Ảnh và video có cùng style */
+  /* Ảnh và video có cùng style */
+  .images img,
+  .images video {
+    width: 45%;          /* 2 ảnh/video mỗi hàng chiếm 45% */
+    max-width: 300px;
+    aspect-ratio: 4/3;   /* giữ tỷ lệ ảnh/video */
+    object-fit: cover;  
+    border-radius: 12px;
+  }
+
+  /* Nút mở thiệp */
+  .open-btn {
+    position: absolute;
+    bottom: -3em;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 0.5em 1.2em;
+    border: none;
+    border-radius: 10px;
+    background: #ffb3c6;
+    color: #fff;
+    font-size: clamp(14px, 4vw, 18px);
+    cursor: pointer;
+    font-family: 'Great Vibes', cursive;
+  }
+
+  /* Fix cho màn hình rất nhỏ (điện thoại mini) */
+  @media (max-width: 400px) {
     .images img,
     .images video {
-      width: 300px;     
-      height: 280px;
-      object-fit: cover;  
-      border-radius: 12px;
+      width: 100%;
+      height: auto;
     }
-
-    /* Nút mở thiệp */
-    .open-btn {
-      position: absolute;
-      bottom: -50px;
-      left: 50%;
-      transform: translateX(-50%);
-      padding: 10px 20px;
-      border: none;
-      border-radius: 10px;
-      background: #ffb3c6;
-      color: #fff;
-      font-size: 18px;
-      cursor: pointer;
-      font-family: 'Great Vibes', cursive;
-    }
-  </style>
+  }
+</style>
 </head>
 <body>
 
