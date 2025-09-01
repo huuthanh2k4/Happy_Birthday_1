@@ -505,15 +505,80 @@ S.UI = (function () {
     init();
 
     return {
-        simulate: function (action) {
-            if (isLandscape || !/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-                performAction(action);
-            }
-        },
-        reset: function (destroy) {
-            reset(destroy);
+    simulate: function (action) {
+        // Nếu không phải mobile portrait -> hành vi cũ (desktop hoặc mobile landscape)
+        const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        if (isLandscape || !isMobileDevice) {
+            performAction(action);
+            return;
         }
-    };
+
+        // --- Mobile ở chế độ portrait: fallback nhẹ bằng DOM để hiển thị countdown ---
+        try {
+            const contentDisplay = document.getElementById('contentDisplay');
+            const contentText = document.getElementById('contentText');
+            // an toàn: nếu không có element fallback về performAction
+            if (!contentDisplay || !contentText) {
+                performAction(action);
+                return;
+            }
+
+            // Tìm token countdown (ví dụ "#countdown 3") trong chuỗi action
+            const countdownMatch = ('' + action).match(/#countdown\s+(\d+)/i);
+            const countdownValue = countdownMatch ? parseInt(countdownMatch[1], 10) : null;
+
+            if (!countdownValue) {
+                // không có countdown -> chạy bình thường
+                performAction(action);
+                return;
+            }
+
+            // Lấy phần sequence còn lại (bỏ token countdown)
+            // sequence thường có dạng: |#countdown 3||HAPPY|BIRTHDAY|...
+            const remaining = ('' + action).replace(/\|?#countdown\s+\d+\|?/i, '').trim();
+            // Chuẩn bị hiển thị
+            contentDisplay.classList.add('show');
+            contentText.style.fontSize = '64px'; // to hơn để dễ nhìn trên mobile
+            contentText.style.textAlign = 'center';
+            contentText.textContent = '';
+
+            // countdown hiển thị (3 -> 1)
+            let cnt = countdownValue;
+            function step() {
+                if (cnt > 0) {
+                    contentText.textContent = cnt;
+                    cnt--;
+                    // thời gian giữa các số: ~900ms (điện thoại có thể chậm), chỉnh nếu cần
+                    setTimeout(step, 900);
+                } else {
+                    // xong countdown: ẩn và tiếp tục chuỗi còn lại
+                    contentText.textContent = '';
+                    contentDisplay.classList.remove('show');
+                    // Nếu vẫn còn nội dung sequence, gọi performAction(remaining)
+                    if (remaining && remaining.length > 0) {
+                        // Nếu remaining bắt đầu bằng |, thì trim
+                        const rem = remaining.replace(/^\|+/, '');
+                        performAction(rem);
+                    } else {
+                        // Nếu ko còn sequence, gọi S.Shape để xóa hoặc reset
+                        performAction('');
+                    }
+                }
+            }
+            // bắt đầu countdown
+            step();
+        } catch (e) {
+            // Nếu có lỗi bất ngờ, fallback về hành vi cũ
+            console.error('simulate fallback error:', e);
+            performAction(action);
+        }
+    },
+
+    reset: function (destroy) {
+        reset(destroy);
+    }
+};
+
 }());
 
 S.Point = function (args) {
