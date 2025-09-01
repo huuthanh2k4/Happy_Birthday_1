@@ -9,7 +9,7 @@ let settings = {
     matrixText: 'HAPPYBIRTHDAY',
     matrixColor1: '#ff69b4', // Màu pink mẫu
     matrixColor2: '#ff1493', // Màu pink mẫu
-    sequence: 'HAPPY|BIRTHDAY|TO|YOU|❤',
+    sequence: 'CHÚC MỪNG|SINH NHẬT|CHỒNG IU|🎂|❤',
     sequenceColor: '#ff69b4', // Màu pink mẫu
     gift: './gif/Cat Love GIF by KIKI.gif',
     pages: [],
@@ -17,6 +17,178 @@ let settings = {
     enableHeart: false,
     isSave: false,
 };
+
+// Biến global để lưu trạng thái checkbox isSave
+window.lastIsSaveState = false;
+
+const musicOptions = [
+    { value: './music/happy-birthday.mp3', label: 'Happy Birthday (Miễn phí)' },
+    { value: './music/happybirthday_domixi.mp3', label: 'Happy Birthday (Độ Mixi)' },
+    { value: './music/happybirtday_uia.mp3', label: 'Happy Birthday (Mèo UIA)' },
+    { value: './music/happybirthday.mp3', label: 'Happy Birthday' },
+    { value: './music/postcardnam.mp3', label: 'Happy Birthday Podcast giọng nam'},
+    { value: './music/podcardnu.mp3', label: 'Happy Birthday Podcast giọng nữ'},
+    { value: './music/suynghitronganh.mp3', label: 'Suy nghĩ trong anh' },
+    { value: './music/phepmau.mp3', label: 'Phép màu' },
+    { value: './music/lambantraianhe.mp3', label: 'Làm bạn trai anh nhé' },
+    { value: './music/denbenanh.mp3', label: 'Đến bên anh' },
+    { value: './music/anhnangcuaanh.mp3', label: 'Ánh nắng của anh' },
+    { value: './music/dunglamtraitimanhdau.mp3', label: 'Đừng làm trái tim anh đau' }
+];
+const gifOptions = [
+    { value: '', label: 'None' },
+    { value: './gif/happy.gif', label: 'Gif1' },
+    { value: './gif/Cat Love GIF by KIKI.gif', label: 'Gif2' },
+    { value: './gif/Happy-Birthday-GIF-by-BREAD-TR-unscreen.gif', label: 'Gif3' },
+    { value: './gif/happy2.gif', label: 'Gif4' },
+    { value: './gif/happy3.gif', label: 'Gif5' },
+];
+
+// Định nghĩa các mẫu màu sẵn (chỉ 3 mẫu + tùy chỉnh)
+const colorThemes = {
+    pink: {
+        matrixColor1: '#ff69b4',
+        matrixColor2: '#ff1493',
+        sequenceColor: '#ff69b4',
+        name: 'Hồng ngọt ngào'
+    },
+    blue: {
+        matrixColor1: '#87ceeb',
+        matrixColor2: '#4169e1',
+        sequenceColor: '#1e90ff',
+        name: 'Xanh dương mát mẻ'
+    },
+    purple: {
+        matrixColor1: '#dda0dd',
+        matrixColor2: '#9370db',
+        sequenceColor: '#8a2be2',
+        name: 'Tím mộng mơ'
+    },
+    custom: {
+        matrixColor1: '#ffb6c1',
+        matrixColor2: '#ffc0cb',
+        sequenceColor: '#d39b9b',
+        name: 'Tùy chỉnh màu'
+    }
+};
+
+// Tạo hàm reset chung có thể tái sử dụng
+function resetWebsiteState() {
+
+    // Reset website state
+    const book = document.getElementById('book');
+    const bookContainer = document.querySelector('.book-container');
+    const canvas = document.querySelector('.canvas');
+    const matrixCanvas = document.getElementById('matrix-rain');
+    const giftImageElement = document.getElementById('gift-image');
+    const contentDisplay = document.getElementById('contentDisplay');
+    const fireworkContainer = document.getElementById('fireworkContainer');
+    const birthdayAudio = document.getElementById('birthdayAudio');
+
+    S.initialized = false;
+    // Ẩn sao khi reset
+    if (typeof hideStars === 'function') {
+        hideStars();
+    }
+
+    // Hide book and related elements
+    if (book) {
+        book.style.display = 'none';
+        book.classList.remove('show');
+    }
+    if (bookContainer) {
+        bookContainer.style.display = 'none';
+        bookContainer.classList.remove('show');
+    }
+    if (contentDisplay) {
+        contentDisplay.classList.remove('show');
+    }
+    if (giftImageElement) {
+        giftImageElement.style.display = 'none';
+        giftImageElement.style.animation = '';
+    }
+    if (fireworkContainer) {
+        fireworkContainer.style.display = 'none';
+        fireworkContainer.style.opacity = '0';
+        fireworkContainer.innerHTML = '';
+    }
+
+    // Remove any existing heart photos
+    const photos = document.querySelectorAll('.photo');
+    photos.forEach(photo => photo.remove());
+
+    // Reset canvas visibility
+    if (canvas) {
+        canvas.style.display = 'block';
+    }
+    if (matrixCanvas) {
+        matrixCanvas.style.display = 'block';
+    }
+
+    // Reset book state
+    if (typeof currentPage !== 'undefined') {
+        currentPage = 0;
+    }
+    if (typeof isBookFinished !== 'undefined') {
+        isBookFinished = false;
+    }
+    if (typeof isFlipping !== 'undefined') {
+        isFlipping = false;
+    }
+    const allPages = document.querySelectorAll('.page');
+    allPages.forEach(page => {
+        page.classList.remove('flipped', 'flipping');
+    });
+
+    // Apply music settings
+    if (birthdayAudio && window.settings) {
+        birthdayAudio.src = window.settings.music;
+        if (typeof isPlaying !== 'undefined' && isPlaying) {
+            birthdayAudio.play().catch(error => {
+            });
+        }
+    }
+
+    // Reset and restart matrix rain với màu mới
+    if (window.settings && typeof matrixChars !== 'undefined') {
+        matrixChars = window.settings.matrixText.split('');
+
+        if (typeof matrixInterval !== 'undefined' && matrixInterval) {
+            clearInterval(matrixInterval);
+            matrixInterval = null;
+            if (matrixCanvas) {
+                const matrixCtx = matrixCanvas.getContext('2d');
+                matrixCtx.clearRect(0, 0, matrixCanvas.width, matrixCanvas.height);
+            }
+        }
+        if (typeof initMatrixRain === 'function') {
+            initMatrixRain();
+        }
+    }
+
+    // Update gift image
+    if (giftImageElement && window.settings) {
+        if (window.settings.gift && window.settings.gift !== '') {
+            giftImageElement.src = window.settings.gift;
+        } else {
+            giftImageElement.src = '';
+        }
+    }
+
+    // ✅ Update pages and recreate book với debug
+    if (window.settings && window.settings.pages) {
+        pages = window.settings.pages;
+        createPages();
+    }
+
+    // Reset and restart the sequence với màu mới
+    if (typeof S !== 'undefined' && S.UI && window.settings) {
+        S.UI.reset(true);
+        const sequence = `|#countdown ${window.settings.countdown}|${window.settings.sequence}|#gift|`;
+        S.UI.simulate(sequence);
+    }
+
+}
 
 // Function để khởi tạo default settings
 function initializeDefaultSettings() {
@@ -44,6 +216,11 @@ function initializeDefaultSettings() {
 // Function để apply settings đã load
 function applyLoadedSettings() {
     const settings = window.settings;
+    // Apply music settings
+    const birthdayAudio = document.getElementById('birthdayAudio');
+    if (birthdayAudio) {
+        birthdayAudio.src = settings.music;
+    }
 
     // Apply gift image
     const giftImageElement = document.getElementById('gift-image');
@@ -953,7 +1130,7 @@ if (languageSwitchBtn) {
                 matrixText: serverSettings.matrixText || 'HAPPYBIRTHDAY',
                 matrixColor1: serverSettings.matrixColor1 || '#ffb6c1',
                 matrixColor2: serverSettings.matrixColor2 || '#ffc0cb',
-                sequence: serverSettings.sequence || 'HAPPY|BIRTHDAY|TO|YOU|❤',
+                sequence: serverSettings.sequence || 'CHÚC MỪNG|SINH NHẬT|CHỒNG IU|🎂|❤',
                 sequenceColor: serverSettings.sequenceColor || '#d39b9b',
                 gift: serverSettings.gift || '',
                 // ✅ Sửa logic boolean - kiểm tra chính xác giá trị
@@ -988,5 +1165,163 @@ if (languageSwitchBtn) {
         applyLoadedSettings();
         window.isWebsiteReady = true;
         if (typeof startWebsite === 'function') tryStartWebsiteWhenLandscape();;
+    }
+}
+
+// Cập nhật event listener cho apply settings để sử dụng hàm reset chung
+applySettingsButton.addEventListener('click', () => {
+    // Kiểm tra enableBook trước
+    const enableBookSelect = document.getElementById('enableBook');
+    const isBookEnabled = enableBookSelect ? enableBookSelect.value === 'true' : false;
+    
+    // Kiểm tra nếu sách được bật nhưng không có trang hoặc tất cả trang đều trống
+    if (isBookEnabled) {
+        if (settings.pages.length === 0) {
+            alert('❌ Sách cần có trang!\n\nVui lòng thêm ít nhất 1 trang cho sách hoặc tắt tính năng sách.');
+            return;
+        }
+        
+        // // Kiểm tra xem có ít nhất 1 trang có ảnh không
+        // const hasValidPage = settings.pages.some(page => page.image && page.image.trim() !== '');
+        // if (!hasValidPage) {
+        //     alert('❌ Sách cần có trang!\n\nVui lòng thêm ít nhất 1 trang có ảnh cho sách hoặc tắt tính năng sách.');
+        //     return;
+        // }
+    }
+    
+    // Kiểm tra logic trang trước khi áp dụng
+    const totalPages = settings.pages.length;
+
+    if (totalPages > 1 && totalPages % 2 === 0) {
+        alert(`❌ ${t('invalidPageStructure')}\n\n${t('currentPages', {total: totalPages})}\n${t('bookStructureGuide')}\n\n${t('pleaseAddOrRemovePage')}`);
+
+        return;
+    }
+
+    // Cập nhật settings từ form
+    settings.music = document.getElementById('backgroundMusic').value;
+    settings.countdown = parseInt(document.getElementById('countdownTime').value) || 3;
+    settings.matrixText = document.getElementById('matrixText').value || 'HAPPYBIRTHDAY';
+    settings.matrixColor1 = document.getElementById('matrixColor1').value;
+    settings.matrixColor2 = document.getElementById('matrixColor2').value;
+    settings.sequence = document.getElementById('sequenceText').value || 'HAPPY|BIRTHDAY|MY|CUTEE|LITTLE|SWARALI|❤';
+    settings.sequenceColor = document.getElementById('sequenceColor').value;
+    settings.gift = document.getElementById('giftImage').value;
+    
+    // Lưu mẫu màu đã chọn
+    const activeButton = document.querySelector('.color-theme-btn.active');
+    if (activeButton) {
+        settings.colorTheme = activeButton.getAttribute('data-theme');
+    }
+
+    settings.enableBook = document.getElementById('enableBook').value === 'true';
+    settings.enableHeart = document.getElementById('enableHeart').value === 'true';
+    settings.isSave = document.getElementById('isSave')?.checked || false;
+    
+    // Cập nhật trạng thái global
+    window.lastIsSaveState = settings.isSave;
+
+    const newPages = [];
+    settings.pages.forEach((page, index) => {
+        const fileInput = document.getElementById(`pageImage${index}`);
+        const contentInput = document.getElementById(`pageContent${index}`);
+
+        const newPage = {};
+        if (fileInput.files.length > 0) {
+            newPage.image = URL.createObjectURL(fileInput.files[0]);
+        } else {
+            newPage.image = page.image;
+        }
+        if (contentInput) {
+            newPage.content = contentInput.value;
+        }
+        newPages.push(newPage);
+    });
+    settings.pages = newPages;
+
+    // Cập nhật pricing
+    if (window.pricingCalculator) {
+        window.pricingCalculator.updateFromSettings(settings);
+    }
+
+    // Cập nhật window.settings
+    window.settings = settings;
+
+    // Sử dụng hàm reset chung
+    resetWebsiteState();
+
+    // Close modal
+    settingsModal.style.display = 'none';
+
+    // Ensure website is started
+    if (typeof startWebsite === 'function') {
+        tryStartWebsiteWhenLandscape();;
+    }
+});
+
+function isAndroid() {
+    return /android/i.test(navigator.userAgent);
+}
+const fullscreenBtn = document.getElementById('fullscreenBtn');
+fullscreenBtn.style.zIndex = 9009999;
+
+function updateFullscreenBtnVisibility() {
+    if (
+        fullscreenBtn &&
+        isAndroid() &&
+        !document.fullscreenElement // Chỉ hiện nếu chưa fullscreen
+    ) {
+        fullscreenBtn.style.display = 'block';
+
+        // Ẩn nút sau 3 giây nếu chưa bấm
+        if (fullscreenBtn.hideTimeout) clearTimeout(fullscreenBtn.hideTimeout);
+        fullscreenBtn.hideTimeout = setTimeout(() => {
+            fullscreenBtn.style.display = 'none';
+        }, 2500);
+    } else if (fullscreenBtn) {
+        fullscreenBtn.style.display = 'none';
+        if (fullscreenBtn.hideTimeout) clearTimeout(fullscreenBtn.hideTimeout);
+    }
+}
+
+updateFullscreenBtnVisibility();
+
+fullscreenBtn.onclick = function () {
+    const elem = document.documentElement;
+    if (elem.requestFullscreen) {
+        if (document.fullscreenElement) {
+            document.exitFullscreen();
+        } else {
+            elem.requestFullscreen();
+        }
+    } else {
+        alert(t('fullscreenNotSupported'));
+    }
+    // Ẩn nút ngay khi bấm
+    fullscreenBtn.style.display = 'none';
+    if (fullscreenBtn.hideTimeout) clearTimeout(fullscreenBtn.hideTimeout);
+};
+
+// Ẩn nút nếu user chuyển sang fullscreen bằng cách khác
+document.addEventListener('fullscreenchange', function () {
+    updateFullscreenBtnVisibility();
+});
+function isLandscapeMode() {
+    return window.innerWidth > window.innerHeight;
+}
+
+function tryStartWebsiteWhenLandscape() {
+    if (window.isWebsiteReady && typeof startWebsite === 'function') {
+        if (isLandscapeMode()) {
+            startWebsite();
+        } else {
+            // Đợi đến khi landscape mới start
+            window.addEventListener('resize', function onResize() {
+                if (isLandscapeMode()) {
+                    startWebsite();
+                    window.removeEventListener('resize', onResize);
+                }
+            });
+        }
     }
 }
