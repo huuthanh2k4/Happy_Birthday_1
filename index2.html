@@ -1,81 +1,173 @@
+<!DOCTYPE html>
 <html lang="vi">
 <head>
   <meta charset="utf-8"/>
   <title>Thiệp sinh nhật</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
   <style>
-    body, html {
-      margin: 0;
-      padding: 0;
-      width: 100vw;
-      height: 100vh;
-      overflow: hidden;
+    /* --- cơ bản --- */
+    html,body{
+      margin:0; padding:0;
+      width:100vw; height:100vh;
+      overflow:hidden;
       background: linear-gradient(to bottom, #fde2e4, #fff1e6);
       font-family: "Great Vibes", cursive;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      display:flex; justify-content:center; align-items:center;
     }
-    .card { position: relative; width: 100vw; height: 100vh; perspective: 2000px; cursor: pointer; }
-    .card-inner { width: 100%; height: 100%; transform-style: preserve-3d; transition: transform 2s ease; }
-    .card.open .card-inner { transform: rotateY(-180deg); }
-    .card-front, .card-back { position: absolute; inset: 0; backface-visibility: hidden; overflow: hidden; }
-    .card-front { display: flex; justify-content: center; align-items: center; flex-direction: column; padding: 2vh 2vw; box-sizing: border-box; }
-    .card-front img { width: 90%; height: auto; max-height: 90%; object-fit: cover; border-radius: 12px; box-shadow: 0 6px 16px rgba(0,0,0,0.25); }
-    .click-hint { position: absolute; bottom: 2vh; left: 50%; transform: translateX(-50%); background: rgba(255,179,198,0.85); color: #fff;
-      padding: 8px 16px; border-radius: 12px; font-size: clamp(14px,2vw,20px); font-family:"Great Vibes",cursive; animation: blink 1.2s infinite; pointer-events:none; }
-    @keyframes blink { 0%,50%,100%{opacity:1;} 25%,75%{opacity:0;} }
-    .card-back { background:#fff8f0; transform:rotateY(180deg); padding:2vh 2vw; display:flex; flex-direction:column; gap:min(2vh,16px); }
-    .message { font-size:clamp(16px,2.6vh,28px); line-height:1.35; font-weight:bold; color:#ff6fb0; text-align:center; max-width:90%; margin:0 auto; min-height:4em; white-space:pre-wrap; }
-    .images { display:grid; grid-template-columns:repeat(2,1fr); gap:min(2vh,16px); align-items:center; justify-items:center; padding-bottom:1vh; }
-    .images img, .images video { width:100%; aspect-ratio:16/9; object-fit:cover; border-radius:12px; }
 
-    /* Overlay thông báo */
-    #overlay {
+    /* --- top error-like banner --- */
+    #topAlert {
       position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.7);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
+      top: env(safe-area-inset-top, 0); /* iOS notch safe */
+      left: 0;
+      right: 0;
       z-index: 9999;
-      color: white;
-      font-size: 22px;
-      text-align: center;
-    }
-    #overlay button {
-      margin-top: 20px;
-      padding: 10px 20px;
-      background: #ff6fb0;
-      border: none;
-      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      background: linear-gradient(90deg,#d9363e,#ff4d4f);
       color: #fff;
-      font-size: 20px;
-      cursor: pointer;
-      font-family: "Great Vibes", cursive;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+      transform: translateY(0);
+      transition: transform .28s ease, opacity .2s ease;
+      font-size: 15px;
     }
+    #topAlert.hidden { transform: translateY(-120%); opacity: 0; pointer-events: none; }
+
+    #topAlert .icon {
+      font-size: 20px;
+      margin-left: 6px;
+      margin-right: 6px;
+      display:inline-flex;
+      align-items:center;
+    }
+    #topAlert .msg {
+      flex: 1 1 auto;
+      font-weight: 600;
+      line-height: 1.2;
+      text-align: left;
+      padding-right: 8px;
+    }
+    #topAlert .actions {
+      display:flex;
+      gap:8px;
+      align-items:center;
+    }
+    #topAlert button {
+      border: none;
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    #btnStart {
+      background: #fff;
+      color: #d9363e;
+    }
+    #btnClose {
+      background: rgba(255,255,255,0.12);
+      color: #fff;
+    }
+
+    /* --- card (thiệp) full-screen layout --- */
+    .card { position: relative; width: 100vw; height: 100vh; perspective: 2000px; cursor:pointer; box-sizing: border-box; }
+    .card-inner { width:100%; height:100%; transform-style: preserve-3d; transition: transform 2s ease; position: relative; }
+    .card.open .card-inner { transform: rotateY(-180deg); }
+
+    .card-front, .card-back {
+      position: absolute; inset:0; backface-visibility: hidden; overflow:hidden;
+    }
+
+    .card-front {
+      display:flex; justify-content:center; align-items:center; flex-direction:column; padding:2vh 2vw; box-sizing:border-box;
+    }
+    .card-front img {
+      width: 86%; height: auto; max-height: 86%; object-fit: cover; border-radius:12px; box-shadow: 0 6px 16px rgba(0,0,0,0.25);
+    }
+    .click-hint {
+      position: absolute;
+      bottom: calc(2vh + env(safe-area-inset-bottom, 0));
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(255,179,198,0.95);
+      color: #fff;
+      padding: 8px 14px;
+      border-radius: 12px;
+      font-size: clamp(13px, 2vw, 18px);
+      font-family: "Great Vibes", cursive;
+      pointer-events: none;
+    }
+
+    .card-back {
+      background:#fff8f0;
+      transform: rotateY(180deg);
+      padding: 2vh 2vw; box-sizing:border-box;
+      display:flex; flex-direction:column; gap:min(2vh,16px); justify-content:flex-start;
+    }
+
+    .message {
+      font-size: clamp(16px, 2.6vh, 28px);
+      line-height: 1.35;
+      font-weight: bold;
+      color: #ff6fb0;
+      text-align: center;
+      max-width: 90%;
+      margin: 0 auto;
+      min-height: 4em;
+      white-space: pre-wrap;
+    }
+
+    .images {
+      display:grid; grid-template-columns: repeat(2,1fr); gap: min(2vh,16px); align-items:center; justify-items:center; padding-bottom:1vh;
+    }
+    .images img, .images video {
+      width:100%; aspect-ratio:16/9; object-fit:cover; border-radius:12px;
+      display:block;
+    }
+
+    /* responsive landscape phones */
+    @media (max-width:768px) and (orientation: landscape) {
+      .card-front img { width: 78%; max-height: 78%; }
+      .message { text-align: left; max-width: 48%; }
+      .images { grid-template-columns: 1fr 1fr; gap: 1.2vh; }
+    }
+
+    /* thêm transition nhẹ cho hide/show */
+    .fade-out { transition: opacity .25s ease; opacity: .0; pointer-events:none; }
   </style>
 </head>
 <body>
-  <!-- Overlay thông báo -->
-  <div id="overlay">
-    <div>🌸 Chào mừng bạn đến với thiệp sinh nhật 🌸<br/>Nhấn nút bên dưới để bắt đầu!</div>
-    <button id="startBtn">Bắt đầu</button>
+
+  <!-- Banner lỗi/alert phía trên -->
+  <div id="topAlert" role="alert" aria-live="polite">
+    <div class="icon"><i class="fas fa-exclamation-circle"></i></div>
+    <div class="msg">
+      <strong>Thông báo:</strong> Để trải nghiệm tốt nhất, hãy bật chế độ toàn màn hình. Nhấn "Bật toàn màn hình".
+    </div>
+    <div class="actions">
+      <button id="btnStart" aria-label="Bật toàn màn hình">Bật toàn màn hình</button>
+      <button id="btnClose" aria-label="Đóng thông báo">Đóng</button>
+    </div>
   </div>
 
-  <div class="card" id="card" style="display:none;">
+  <!-- Thiệp (luôn hiển thị phía dưới banner) -->
+  <div class="card" id="card" aria-hidden="false">
     <div class="card-inner">
       <div class="card-front">
-        <img src="IMG/63c2868b7532b37fc132cc49134a258e.jpg" alt="Thiệp sinh nhật">
+        <img src="IMG/63c2868b7532b37fc132cc49134a258e.jpg" alt="Thiệp sinh nhật mặt trước">
         <div class="click-hint">👉 Bấm vào hình để mở thiệp 👈</div>
       </div>
+
       <div class="card-back">
         <div class="message" id="message"></div>
         <div class="images">
           <img src="IMG/z6947289143995_02399e941a996318b424e2c85fb61b15.jpg" alt="ảnh 2">
-          <video autoplay controls loop muted playsinline>
+          <video autoplay muted loop playsinline controls>
             <source src="MUSIC/6950497419665.mp4" type="video/mp4">
             Trình duyệt của bạn không hỗ trợ video.
           </video>
@@ -85,6 +177,7 @@
   </div>
 
   <script>
+    // Type effect
     const messageEl = document.getElementById("message");
     const text = "Chúc mừng sinh nhật chồng yêu! 💕\nChúc anh tuổi mới thật nhiều sức khỏe,\nhoàn thành tốt dự định của mình\nvà luôn hạnh phúc bên gia đình nhỏ của chúng ta.\nCảm ơn anh vì tất cả – yêu anh thật nhiều!";
     let i = 0;
@@ -95,36 +188,55 @@
         setTimeout(typeEffect, 60);
       }
     }
+
+    // Flip card when user clicks the card
     function openCard() {
       const card = document.getElementById("card");
       card.classList.add("open");
       const hint = card.querySelector(".click-hint");
       if (hint) hint.style.display = "none";
-      setTimeout(typeEffect, 800);
+      setTimeout(typeEffect, 700);
     }
     document.getElementById("card").addEventListener("click", openCard);
 
-    // Xử lý nút "Bắt đầu"
-    document.getElementById("startBtn").addEventListener("click", function() {
-      const overlay = document.getElementById("overlay");
-      const card = document.getElementById("card");
+    // Top banner controls
+    const topAlert = document.getElementById("topAlert");
+    const btnStart = document.getElementById("btnStart");
+    const btnClose = document.getElementById("btnClose");
 
-      // Thử bật fullscreen
-      if (document.documentElement.requestFullscreen) {
-        document.documentElement.requestFullscreen().catch(err=>console.log("Fullscreen lỗi:",err));
-      } else if (document.documentElement.webkitRequestFullscreen) {
-        document.documentElement.webkitRequestFullscreen();
-      } else if (document.documentElement.msRequestFullscreen) {
-        document.documentElement.msRequestFullscreen();
+    function hideTopAlert() {
+      topAlert.classList.add('hidden');
+      setTimeout(() => {
+        if (topAlert && topAlert.parentNode) topAlert.parentNode.removeChild(topAlert);
+      }, 360);
+    }
+
+    // Bật fullscreen khi bấm Bắt đầu (phải do tương tác người dùng)
+    btnStart.addEventListener('click', function () {
+      // ưu tiên root documentElement fullscreen
+      const el = document.documentElement;
+      const req = el.requestFullscreen || el.webkitRequestFullscreen || el.msRequestFullscreen;
+      if (req) {
+        try {
+          req.call(el);
+        } catch (err) {
+          console.warn('Không thể vào fullscreen trực tiếp:', err);
+        }
       }
-
-      // Ẩn overlay, hiện thiệp
-      overlay.style.display = "none";
-      card.style.display = "block";
+      hideTopAlert();
     });
-  </script>
 
-  <script>
+    // Đóng notification (không fullscreen)
+    btnClose.addEventListener('click', function () {
+      hideTopAlert();
+    });
+
+    // Nếu user vào fullscreen theo cách khác, ẩn banner
+    document.addEventListener('fullscreenchange', function () {
+      if (document.fullscreenElement) hideTopAlert();
+    });
+
+    // Nhạc nền (autoplay nếu được, fallback click)
     window.addEventListener("DOMContentLoaded", function () {
       const audio = document.createElement("audio");
       audio.src = "MUSIC/21.mp3";
