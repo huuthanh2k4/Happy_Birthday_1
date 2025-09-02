@@ -52,40 +52,51 @@
   <div id="rotateMessage">📱 Vui lòng xoay ngang màn hình (landscape) để tiếp tục!</div>
 
   <script>
-    const rotateMessage = document.getElementById("rotateMessage");
+  const rotateMessage = document.getElementById("rotateMessage");
 
-    function isPortrait() {
-      return window.innerHeight > window.innerWidth;
+  function isPortrait() {
+    return window.innerHeight > window.innerWidth;
+  }
+
+  function checkOrientation() {
+    if (isPortrait()) {
+      rotateMessage.style.display = "flex";
+    } else {
+      rotateMessage.style.display = "none";
+    }
+  }
+
+  window.addEventListener("load", checkOrientation);
+  window.addEventListener("resize", checkOrientation);
+  window.addEventListener("orientationchange", checkOrientation);
+
+  document.getElementById("startBtn").addEventListener("click", async () => {
+    if (isPortrait()) {
+      alert("⚠️ Hãy xoay ngang màn hình để bắt đầu!");
+      return; // không cho chuyển trang nếu xoay dọc
     }
 
-    function checkOrientation() {
-      if (isPortrait()) {
-        rotateMessage.style.display = "flex";
-      } else {
-        rotateMessage.style.display = "none";
-      }
+    // Kích hoạt chế độ toàn màn hình
+    const body = document.body;
+    if (body.requestFullscreen) {
+      await body.requestFullscreen();
+    } else if (body.webkitRequestFullscreen) { // Safari
+      await body.webkitRequestFullscreen();
+    } else if (body.msRequestFullscreen) { // IE/Edge
+      await body.msRequestFullscreen();
     }
 
-    window.addEventListener("load", checkOrientation);
-    window.addEventListener("resize", checkOrientation);
-    window.addEventListener("orientationchange", checkOrientation);
+    const audio = new Audio("MUSIC/20.mp3");
+    audio.loop = true;
+    audio.play();
 
-    document.getElementById("startBtn").addEventListener("click", () => {
-      if (isPortrait()) {
-        alert("⚠️ Hãy xoay ngang màn hình để bắt đầu!");
-        return; // không cho chuyển trang nếu xoay dọc
-      }
+    // Lưu nhạc để không bị mất khi chuyển trang
+    window.bgAudio = audio;
 
-      const audio = new Audio("MUSIC/20.mp3");
-      audio.loop = true;
-      audio.play();
+    // Chuyển sang trang chính
+    window.location.href = "index1.html";
+  });
+</script>
 
-      // Lưu nhạc để không bị mất khi chuyển trang
-      window.bgAudio = audio;
-
-      // Chuyển sang trang chính
-      window.location.href = "index1.html";
-    });
-  </script>
 </body>
 </html>
