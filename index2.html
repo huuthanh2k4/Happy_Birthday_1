@@ -1,20 +1,23 @@
-<!DOCTYPE html>
 <html lang="vi">
-<head>
-  <meta charset="UTF-8">
-  <title>Thiệp sinh nhật</title>
+ <head>
+  <meta charset="utf-8"/>
+  <title>
+   Thiệp sinh nhật
+  </title>
+  <script src="https://cdn.tailwindcss.com">
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&amp;display=swap" rel="stylesheet"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap');
-
-    /* Toàn màn hình, landscape-friendly */
-    html, body {
+   body,
+    html {
       margin: 0;
       padding: 0;
       width: 100vw;
       height: 100vh;
       overflow: hidden;
       background: linear-gradient(to bottom, #fde2e4, #fff1e6);
-      font-family: 'Great Vibes', cursive;
+      font-family: "Great Vibes", cursive;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -22,12 +25,12 @@
 
     .card {
       position: relative;
-      width: 100vw;        /* full chiều ngang */
-      height: 100vh;       /* full chiều cao */
+      width: 100vw;
+      height: 100vh;
       max-width: 100%;
       max-height: 100%;
       perspective: 2000px;
-      cursor: pointer;     /* click để mở */
+      cursor: pointer;
     }
 
     .card-inner {
@@ -42,34 +45,33 @@
       transform: rotateY(-180deg);
     }
 
-    .card-front, .card-back {
+    .card-front,
+    .card-back {
       position: absolute;
       inset: 0;
       backface-visibility: hidden;
-      border-radius: 0;   /* full màn hình, không bo góc để khỏi cắt nội dung */
+      border-radius: 0;
       overflow: hidden;
     }
 
-.card-front {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  padding: 2vh 2vw; /* thêm padding để ảnh không sát viền */
-  box-sizing: border-box;
-}
+    .card-front {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      padding: 2vh 2vw;
+      box-sizing: border-box;
+    }
 
-.card-front img {
-  width: 90%;      /* nhỏ hơn 100% */
-  height: auto;    /* giữ tỉ lệ */
-  max-height: 90%; /* không quá cao */
-  object-fit: cover;
-  border-radius: 12px; /* thêm bo nhẹ cho đẹp */
-  box-shadow: 0 6px 16px rgba(0,0,0,0.25); /* đổ bóng nhẹ */
-}
+    .card-front img {
+      width: 90%;
+      height: auto;
+      max-height: 90%;
+      object-fit: cover;
+      border-radius: 12px;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+    }
 
-
-    /* Gợi ý bấm */
     .click-hint {
       position: absolute;
       bottom: 2vh;
@@ -80,23 +82,29 @@
       padding: 8px 16px;
       border-radius: 12px;
       font-size: clamp(14px, 2vw, 20px);
-      font-family: 'Great Vibes', cursive;
+      font-family: "Great Vibes", cursive;
       animation: blink 1.2s infinite;
       pointer-events: none;
-    }
-    @keyframes blink {
-      0%, 50%, 100% { opacity: 1; }
-      25%, 75% { opacity: 0; }
+      white-space: nowrap;
     }
 
-    /* Mặt sau: CHỮ + 2 khung ẢNH/VIDEO, luôn còn chỗ cho chữ */
+    @keyframes blink {
+      0%,
+      50%,
+      100% {
+        opacity: 1;
+      }
+      25%,
+      75% {
+        opacity: 0;
+      }
+    }
+
     .card-back {
       background: #fff8f0;
       transform: rotateY(180deg);
       padding: 2vh 2vw;
       box-sizing: border-box;
-
-      /* Bố cục dọc: chữ phía trên (auto), khối ảnh phía dưới (tự canh theo bề ngang) */
       display: flex;
       flex-direction: column;
       justify-content: flex-start;
@@ -104,23 +112,20 @@
     }
 
     .message {
-      /* chữ co giãn theo chiều cao màn hình để luôn vừa */
       font-size: clamp(16px, 2.6vh, 28px);
       line-height: 1.35;
       font-weight: bold;
       color: #ff6fb0;
       text-align: center;
-
-      /* đảm bảo luôn có chỗ hiển thị (không bị ảnh lấn chiếm) */
       flex: 0 0 auto;
       max-width: 90%;
       margin: 0 auto;
-      min-height: 4em; /* chừa không gian tối thiểu */
+      min-height: 4em;
+      white-space: pre-wrap;
     }
 
-    /* Khối ảnh/video chiếm ~nửa chiều cao thẻ nhờ tỷ lệ 16:9 + 2 cột */
     .images {
-      flex: 0 0 auto; /* không ép theo chiều cao, để tự tính theo bề ngang */
+      flex: 0 0 auto;
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       gap: min(2vh, 16px);
@@ -129,54 +134,99 @@
       padding-bottom: 1vh;
     }
 
-    /* Mỗi khung tự tính chiều cao từ bề ngang theo aspect-ratio, nên tổng chiều cao ~50% thẻ */
     .images img,
     .images video {
       width: 100%;
-      aspect-ratio: 16 / 9; /* thấp, để dành chỗ cho chữ */
+      aspect-ratio: 16 / 9;
       height: auto;
       object-fit: cover;
       border-radius: 12px;
       display: block;
     }
 
-    /* Tối ưu cho laptop: tránh chữ quá nhỏ/ảnh quá to trên màn rộng */
     @media (min-aspect-ratio: 16/10) {
-      .message { font-size: clamp(16px, 2.2vh, 26px); }
-      .images { gap: min(1.8vh, 14px); }
+      .message {
+        font-size: clamp(16px, 2.2vh, 26px);
+      }
+      .images {
+        gap: min(1.8vh, 14px);
+      }
+    }
+
+    /* Responsive landscape phone: rearrange card-back layout horizontally */
+    @media (max-width: 768px) and (orientation: landscape) {
+      body,
+      html {
+        overflow: auto;
+      }
+      .card {
+        width: 100vw;
+        height: 100vh;
+        max-width: 100%;
+        max-height: 100%;
+      }
+      .card-back {
+        flex-direction: row;
+        align-items: center;
+        gap: 1.5vh;
+        padding: 2vh 4vw;
+      }
+      .message {
+        flex: 1 1 40%;
+        max-width: 40%;
+        min-height: auto;
+        font-size: clamp(14px, 3vh, 24px);
+        text-align: left;
+        white-space: pre-wrap;
+      }
+      .images {
+        flex: 1 1 60%;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5vh;
+        padding-bottom: 0;
+      }
+      .images img,
+      .images video {
+        aspect-ratio: 16 / 9;
+        border-radius: 12px;
+      }
+      .card-front img {
+        width: 80%;
+        max-height: 80%;
+      }
+      .click-hint {
+        font-size: clamp(12px, 1.8vw, 18px);
+        bottom: 1.5vh;
+      }
     }
   </style>
-</head>
-<body>
-
+ </head>
+ <body>
   <div class="card" id="card">
-    <div class="card-inner">
-      <div class="card-front">
-        <img src="IMG/63c2868b7532b37fc132cc49134a258e.jpg" alt="ảnh 1">
-        <div class="click-hint">👉 Bấm vào hình để mở thiệp 👈</div>
-      </div>
-
-      <div class="card-back">
-        <div class="message" id="message"></div>
-
-        <div class="images">
-          <img src="IMG/z6947289143995_02399e941a996318b424e2c85fb61b15.jpg" alt="ảnh 2">
-          <video controls autoplay muted loop>
-            <source src="MUSIC/6950497419665.mp4" type="video/mp4">
-            Trình duyệt của bạn không hỗ trợ video.
-          </video>
-        </div>
-      </div>
+   <div class="card-inner">
+    <div class="card-front">
+     <img alt="Thiệp sinh nhật mặt trước, hình ảnh phong cách nhẹ nhàng với nền hồng nhạt và chữ viết tay màu trắng" height="800" src="IMG/63c2868b7532b37fc132cc49134a258e.jpg" width="600"/>
+     <div class="click-hint">
+      👉 Bấm vào hình để mở thiệp 👈
+     </div>
     </div>
+    <div class="card-back">
+     <div class="message" id="message">
+     </div>
+     <div class="images">
+      <img alt="Ảnh phong cảnh nhẹ nhàng với hoa và ánh sáng ấm áp, tỉ lệ 16:9" height="225" src="IMG/z6947289143995_02399e941a996318b424e2c85fb61b15.jpg" width="400"/>
+      <video autoplay="" controls="" loop="" muted="" playsinline="">
+       <source src="MUSIC/6950497419665.mp4" type="video/webm"/>
+       Trình duyệt của bạn không hỗ trợ video.
+      </video>
+     </div>
+    </div>
+   </div>
   </div>
-
   <script>
-    const messageEl = document.getElementById("message");
-    const text = "Chúc mừng sinh nhật chồng yêu! 💕\n\
-Chúc anh tuổi mới thật nhiều sức khỏe,\n\
-hoàn thành tốt dự định của mình\n\
-và luôn hạnh phúc bên gia đình nhỏ của chúng ta.\n\
-Cảm ơn anh vì tất cả – yêu anh thật nhiều!";
+   const messageEl = document.getElementById("message");
+    const text =
+      "Chúc mừng sinh nhật chồng yêu! 💕\nChúc anh tuổi mới thật nhiều sức khỏe,\nhoàn thành tốt dự định của mình\nvà luôn hạnh phúc bên gia đình nhỏ của chúng ta.\nCảm ơn anh vì tất cả – yêu anh thật nhiều!";
     let i = 0;
 
     function typeEffect() {
@@ -192,18 +242,16 @@ Cảm ơn anh vì tất cả – yêu anh thật nhiều!";
       card.classList.add("open");
       const hint = card.querySelector(".click-hint");
       if (hint) hint.style.display = "none";
-      setTimeout(typeEffect, 800); // bắt đầu đánh chữ sớm hơn để không cảm giác "trống"
+      setTimeout(typeEffect, 800);
     }
 
-    // Click vào ảnh bìa để mở
     document.getElementById("card").addEventListener("click", openCard);
   </script>
-
   <script>
-    // Nhạc nền (autoplay nếu được, fallback click)
-    window.addEventListener("DOMContentLoaded", function () {
+   window.addEventListener("DOMContentLoaded", function () {
       const audio = document.createElement("audio");
-      audio.src = "MUSIC/21.mp3";
+      audio.src =
+        "https://cdn.pixabay.com/download/audio/2022/03/15/audio_3a3a7a7a3a.mp3?filename=happy-birthday-11207.mp3";
       audio.loop = true;
       audio.autoplay = true;
       audio.volume = 1;
@@ -217,6 +265,5 @@ Cảm ơn anh vì tất cả – yêu anh thật nhiều!";
       });
     });
   </script>
-
-</body>
+ </body>
 </html>
